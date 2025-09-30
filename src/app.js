@@ -4,8 +4,10 @@ const app = express();
 
 const { adminAuth, userAuth } = require("./middlewares/auth");
 
-app.use("/admin/getAllData", adminAuth, (req, res) => {
-  res.send("Here is all the admin data");
+app.use("/admin", adminAuth);
+
+app.get("/admin/getAllData", (req, res) => {
+  res.send("Admin data posted successfully");
 });
 
 app.get("/user/getAllData", userAuth, (req, res) => {

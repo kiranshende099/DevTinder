@@ -2,37 +2,19 @@ const express = require("express");
 
 const app = express();
 
-app.use(
-  "/user",
-  [
-    (req, res, next) => {
-      console.log("1st Route");
-      next();
-      res.send("1st Route");
-    },
-    (req, res, next) => {
-      console.log("2nd Route");
+const { adminAuth, userAuth } = require("./middlewares/auth");
 
-      // res.send("2nd Route");
-      next();
-    },
-  ],
-  (req, res, next) => {
-    console.log("3nd Route");
-    next();
-    res.send("3nd Route");
-  },
-  (req, res, next) => {
-    console.log("4nd Route");
-    next();
-    res.send("4nd Route");
-  },
-  (req, res, next) => {
-    console.log("5nd Route");
-    next();
-    res.send("5nd Route");
-  }
-);
+app.use("/admin/getAllData", adminAuth, (req, res) => {
+  res.send("Here is all the admin data");
+});
+
+app.get("/user/getAllData", userAuth, (req, res) => {
+  res.send("Here is all the user data");
+});
+
+app.post("/user/login", (req, res) => {
+  res.send("User logged in successfully");
+});
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server run on port ${PORT}`));

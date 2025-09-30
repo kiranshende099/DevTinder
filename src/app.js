@@ -2,30 +2,37 @@ const express = require("express");
 
 const app = express();
 
-app.get("/user", (req, res) => {
-  res.send({ firstName: "Kiran", lastName: "Shende" });
-});
+app.use(
+  "/user",
+  [
+    (req, res, next) => {
+      console.log("1st Route");
+      next();
+      res.send("1st Route");
+    },
+    (req, res, next) => {
+      console.log("2nd Route");
 
-app.post("/user", (req, res) => {
-  res.send("Data added successfully");
-  console.log("Data added successfully");
-});
-
-app.put("/user", (req, res) => {
-  res.send("Data updated successfully");
-  console.log("Data added successfully");
-});
-
-app.patch("/user", (req, res) => {
-  res.send("Data partially updated successfully");
-  console.log("Data added successfully");
-});
-
-app.delete("/user", (req, res) => {
-  res.send("Data removed successfully");
-  console.log("Data removed successfully");
-});
+      // res.send("2nd Route");
+      next();
+    },
+  ],
+  (req, res, next) => {
+    console.log("3nd Route");
+    next();
+    res.send("3nd Route");
+  },
+  (req, res, next) => {
+    console.log("4nd Route");
+    next();
+    res.send("4nd Route");
+  },
+  (req, res, next) => {
+    console.log("5nd Route");
+    next();
+    res.send("5nd Route");
+  }
+);
 
 const PORT = 3000;
-
 app.listen(PORT, () => console.log(`Server run on port ${PORT}`));

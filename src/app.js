@@ -1,22 +1,27 @@
 const express = require("express");
 
-const app = express();
-
-const { adminAuth, userAuth } = require("./middlewares/auth");
-
-app.use("/admin", adminAuth);
-
-app.get("/admin/getAllData", (req, res) => {
-  res.send("Admin data posted successfully");
-});
-
-app.get("/user/getAllData", userAuth, (req, res) => {
-  res.send("Here is all the user data");
-});
-
-app.post("/user/login", (req, res) => {
-  res.send("User logged in successfully");
-});
-
+const connectDB = require("./config/database.js");
 const PORT = 3000;
-app.listen(PORT, () => console.log(`Server run on port ${PORT}`));
+const app = express();
+const User = require("./models/user.js");
+
+app.use(express.json());
+
+app.post("/signup", async (req, res) => {
+  console.log(req.body);
+  const user = new User(req.body);
+
+  try {
+    await user.save();
+    res.send("User added successfully");
+  } catch (error) {
+    res.status(500).send("Error in creating user:" + error.message);
+  }
+});
+
+connectDB()
+  .then(() => {
+    console.log("Database Connected");
+    app.listen(PORT, () => console.log(`Server run on port ${PORT}`));
+  })
+  .catch((err) => console.log(err));

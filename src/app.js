@@ -7,15 +7,17 @@ const User = require("./models/user.js");
 
 app.use(express.json());
 
-app.post("/signup", async (req, res) => {
-  console.log(req.body);
-  const user = new User(req.body);
+app.post("/user", async (req, res) => {
+  const data = req.body;
 
   try {
+    const user = new User(data);
+    console.log(user);
     await user.save();
-    res.send("User added successfully");
+
+    res.status(201).send("User updated successfully");
   } catch (error) {
-    res.status(500).send("Error in creating user:" + error.message);
+    res.status(500).send("Error in updating user:" + error.message);
   }
 });
 

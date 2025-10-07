@@ -6,7 +6,10 @@ const connectDB = require("./config/database.js");
 const PORT = 3000;
 const app = express();
 const User = require("./models/user.js");
+const cookieParser = require("cookie-parser");
+const { userAuth } = require("./middlewares/auth.js");
 
+app.use(cookieParser());
 app.use(express.json());
 
 app.post("/login", async (req, res) => {
@@ -20,8 +23,17 @@ app.post("/login", async (req, res) => {
       return res.status(400).send("Invalid email or password");
     }
 
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    const isPasswordMatch = await user.validatePassword(password);
     if (isPasswordMatch) {
+      // Create JWT Token
+
+      const token = await user.getJWT();
+
+      console.log(token);
+
+      // Add JWT to cookie
+
+      res.cookie("token", token);
       res.status(200).send("Login Successful");
     } else {
       res.status(400).send("Invalid email or password");
@@ -29,6 +41,20 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     res.status(500).send("Error in login:" + error.message);
   }
+});
+
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(user);
+  } catch (error) {
+    res.status(500).send("Error in fetching profile:" + error.message);
+  }
+});
+
+app.post("/sendConnectionRequest", userAuth, async (req, res) => {
+  console.log("Sending connection request");
+  res.send("Connection request sent");
 });
 
 app.post("/signup", async (req, res) => {
